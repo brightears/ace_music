@@ -1,0 +1,19 @@
+<article
+    hx-get="/api/tracks/{{ track.id }}/status"
+    hx-trigger="every 2s"
+    hx-swap="outerHTML"
+>
+    <header>
+        <span aria-busy="true"></span>
+        {% if track.status == "queued" %}
+        Queued &mdash; waiting for ACE-Step server...
+        {% elif track.status == "generating" %}
+        Generating your track...
+        {% endif %}
+    </header>
+    <p>
+        <strong>{{ track.prompt[:80] }}</strong><br>
+        <small>{{ track.audio_duration | int }}s &middot; {{ track.audio_format | upper }} &middot; Task: {{ track.task_id[:8] }}...</small>
+    </p>
+    <progress></progress>
+</article>

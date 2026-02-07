@@ -1,0 +1,42 @@
+/* ACE Music — Custom CSS overrides for Pico */
+
+/* Compact action buttons in library */
+.small-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    margin: 0.1rem;
+}
+
+.track-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+/* Tighter table layout */
+table td, table th {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Audio player sizing */
+audio {
+    max-width: 100%;
+}
+
+/* Footer spacing */
+footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--pico-muted-border-color);
+    text-align: center;
+}
+
+/* HTMX loading indicator */
+.htmx-indicator {
+    display: none;
+}
+.htmx-request .htmx-indicator {
+    display: inline;
+}

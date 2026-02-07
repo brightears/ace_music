@@ -1,0 +1,40 @@
+<tr id="track-{{ track.id }}">
+    <td>
+        <strong>{{ track.prompt[:60] }}{% if track.prompt | length > 60 %}...{% endif %}</strong>
+        {% if track.lyrics %}<br><small>With lyrics</small>{% endif %}
+    </td>
+    <td>{{ track.audio_duration | int }}s</td>
+    <td>{{ track.audio_format | upper }}</td>
+    <td>
+        {% if track.status == "completed" %}
+        <mark>Done</mark>
+        {% if track.generation_time %}<br><small>{{ track.generation_time }}s</small>{% endif %}
+        {% elif track.status == "generating" %}
+        <span aria-busy="true">Generating...</span>
+        {% elif track.status == "queued" %}
+        Queued
+        {% elif track.status == "failed" %}
+        <ins style="color: var(--pico-del-color); text-decoration: none;">Failed</ins>
+        {% if track.error_message %}<br><small>{{ track.error_message[:50] }}</small>{% endif %}
+        {% endif %}
+    </td>
+    <td><small>{{ track.created_at.strftime("%Y-%m-%d %H:%M") }}</small></td>
+    <td>
+        {% if track.status == "completed" and track.file_path %}
+        <audio controls preload="none" style="max-width: 200px; height: 32px;">
+            <source src="/audio/{{ track.file_path.split('/')[-1] }}" type="audio/{{ track.audio_format }}">
+        </audio>
+        <div class="track-actions">
+            <a href="/api/tracks/{{ track.id }}/download" role="button" class="outline secondary small-btn">Download</a>
+            <a href="/generate?prompt={{ track.prompt | urlencode }}&audio_duration={{ track.audio_duration }}&audio_format={{ track.audio_format }}" role="button" class="outline secondary small-btn">Re-generate</a>
+            <button class="outline secondary small-btn"
+                    hx-delete="/api/tracks/{{ track.id }}"
+                    hx-target="#track-{{ track.id }}"
+                    hx-swap="outerHTML"
+                    hx-confirm="Delete this track?">Delete</button>
+        </div>
+        {% elif track.status in ("queued", "generating") %}
+        <span aria-busy="true">Working...</span>
+        {% endif %}
+    </td>
+</tr>

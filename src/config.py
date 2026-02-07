@@ -35,6 +35,11 @@ class Settings(BaseSettings):
     poll_interval: float = 2.0
     poll_timeout: float = 300.0
 
+    # Web UI
+    web_host: str = "127.0.0.1"
+    web_port: int = 8000
+    database_url: str = "sqlite+aiosqlite:///data/ace_music.db"
+
     model_config = {
         "env_file": ".env",
         "env_file_encoding": "utf-8",

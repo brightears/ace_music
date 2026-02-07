@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Library - ACE Music{% endblock %}
+
+{% block content %}
+<h2>Track Library</h2>
+
+<form action="/library" method="get">
+    <div class="grid">
+        <input type="search" name="search" placeholder="Search by prompt or lyrics..."
+               value="{{ search }}" aria-label="Search tracks">
+        <button type="submit">Search</button>
+    </div>
+</form>
+
+<p><small>{{ tracks | length }} track{{ 's' if tracks | length != 1 else '' }}</small></p>
+
+{% if tracks %}
+<figure>
+    <table>
+        <thead>
+            <tr>
+                <th>Prompt</th>
+                <th>Duration</th>
+                <th>Format</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="track-list">
+            {% for track in tracks %}
+            {% include "partials/track_row.html" %}
+            {% endfor %}
+        </tbody>
+    </table>
+</figure>
+{% else %}
+<p>No tracks yet. <a href="/generate">Generate your first track!</a></p>
+{% endif %}
+{% endblock %}

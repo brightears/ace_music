@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ACE Music{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+</head>
+<body>
+    <header class="container">
+        <nav>
+            <ul>
+                <li><strong>ACE Music</strong></li>
+            </ul>
+            <ul>
+                <li><a href="/generate" {% if request.url.path == '/generate' %}aria-current="page"{% endif %}>Generate</a></li>
+                <li><a href="/library" {% if request.url.path == '/library' %}aria-current="page"{% endif %}>Library</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="container">
+        <small>ACE Music v0.1 &mdash; Powered by ACE-Step v1.5 &mdash; BMAsia Group</small>
+    </footer>
+</body>
+</html>

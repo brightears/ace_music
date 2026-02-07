@@ -15,7 +15,8 @@ BMAsia Group internal music creation platform for generating background music ac
 - **Package Manager:** uv
 - **API Server:** ACE-Step built-in REST API (port 8001)
 - **Deployment:** Docker on cloud GPU (RunPod / Vast.ai)
-- **Platform UI:** Custom-built (Phase 4 — NOT ace-step-ui)
+- **Platform UI:** FastAPI + Jinja2 + HTMX + SQLite (custom-built, NOT ace-step-ui)
+- **CSS Framework:** Pico CSS (classless, from CDN)
 
 ## Key Technical Decisions
 
@@ -73,6 +74,12 @@ python scripts/test-connection.py       # Test API connectivity
 python scripts/test-generate.py         # Generate a test track
 ```
 
+### Web UI (local)
+```bash
+bash scripts/start-web.sh              # Start web UI at http://127.0.0.1:8000
+# Or directly: python3 -m uvicorn src.web.app:app --port 8000
+```
+
 ## File Structure
 
 ```
@@ -105,7 +112,8 @@ ACE Music/
 ├── scripts/
 │   ├── setup-gpu-server.sh  # Full GPU server setup from scratch
 │   ├── start-api.sh         # Launch ACE-Step API server
-│   ├── start-ui.sh          # Launch Gradio web UI
+│   ├── start-ui.sh          # Launch Gradio web UI (on GPU server)
+│   ├── start-web.sh         # Launch FastAPI web UI (local)
 │   ├── download-models.sh   # Pre-download model files
 │   ├── health-check.sh      # Verify API server health
 │   ├── test-connection.py   # Test API connectivity
@@ -113,9 +121,22 @@ ACE Music/
 ├── src/
 │   ├── __init__.py
 │   ├── ace_client.py        # Async Python client for ACE-Step API
-│   └── config.py            # Pydantic settings management
-├── tests/                   # Test suite (Phase 4+)
-└── presets/                 # Generation preset files (Phase 5+)
+│   ├── config.py            # Pydantic settings management
+│   ├── web/                 # FastAPI web UI (Phase 4)
+│   │   ├── app.py           # FastAPI app, lifespan, static mounts
+│   │   ├── routes.py        # HTTP endpoints (pages, API, partials)
+│   │   ├── database.py      # SQLAlchemy Track model, sessions
+│   │   └── generation.py    # Generation orchestration, background tasks
+│   └── templates/           # Jinja2 templates (Phase 4)
+│       ├── base.html        # Layout (Pico CSS + HTMX from CDN)
+│       ├── generate.html    # Generation form (14 params)
+│       ├── library.html     # Track library with search
+│       ├── partials/        # HTMX partials (track_row, progress, result, error)
+│       └── static/styles.css
+├── data/                    # SQLite database (auto-created)
+├── outputs/                 # Generated audio files
+├── tests/                   # Test suite (Phase 6)
+└── presets/                 # Generation preset files (Phase 5)
 ```
 
 ## Key Links
@@ -132,7 +153,7 @@ ACE Music/
 - [x] Phase 1: Research & Infrastructure (CLAUDE.md, agents, skills, RESEARCH.md)
 - [x] Phase 2: Infrastructure Setup (scripts, client library, Docker, configs)
 - [x] Phase 3: Cloud GPU Setup (GPU_SETUP.md, provider comparison, cost estimates)
-- [ ] Phase 4: Music Creation Platform (web UI, SQLite, track management)
+- [x] Phase 4: Music Creation Platform (FastAPI + HTMX web UI, SQLite, track management)
 - [ ] Phase 5: Batch Generation Pipeline (CSV/JSON presets, thousands of tracks)
 - [ ] Phase 6: Testing & Quality Plan (genre matrix, A/B vs Mureka)
 

@@ -51,6 +51,10 @@ logs/
 # Docker
 docker-compose.override.yml
 
+# Database
+data/*.db
+data/*.db-journal
+
 # Temporary
 tmp/
 temp/

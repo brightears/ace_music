@@ -1,0 +1,25 @@
+<article>
+    <header>Track generated successfully!</header>
+    <p>
+        <strong>{{ track.prompt[:80] }}</strong><br>
+        <small>
+            {{ track.audio_duration | int }}s &middot;
+            {{ track.audio_format | upper }} &middot;
+            {% if track.generation_time %}{{ track.generation_time }}s generation time &middot;{% endif %}
+            {% if track.file_size %}{{ (track.file_size / 1024 / 1024) | round(1) }} MB{% endif %}
+        </small>
+    </p>
+
+    {% if track.file_path %}
+    <audio controls autoplay style="width: 100%;">
+        <source src="/audio/{{ track.file_path.split('/')[-1] }}" type="audio/{{ track.audio_format }}">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="grid">
+        <a href="/api/tracks/{{ track.id }}/download" role="button" class="outline">Download</a>
+        <a href="/library" role="button" class="outline secondary">View Library</a>
+        <a href="/generate?prompt={{ track.prompt | urlencode }}&audio_duration={{ track.audio_duration }}&audio_format={{ track.audio_format }}" role="button" class="outline secondary">Generate Another</a>
+    </div>
+    {% endif %}
+</article>

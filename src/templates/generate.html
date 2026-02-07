@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Music - ACE Music{% endblock %}
+
+{% block content %}
+<h2>Generate Music</h2>
+
+<form hx-post="/api/generate" hx-target="#result" hx-swap="innerHTML" hx-indicator="#submit-indicator">
+
+    <label for="prompt">
+        Style &amp; Mood
+        <input type="text" name="prompt" id="prompt"
+               placeholder="ambient lounge jazz, soft piano, gentle strings"
+               value="{{ prefill_prompt }}"
+               required>
+        <small>Describe the genre, instruments, mood, and tempo.</small>
+    </label>
+
+    <label for="lyrics">
+        Lyrics <small>(optional &mdash; leave empty for instrumental)</small>
+        <textarea name="lyrics" id="lyrics" rows="5"
+                  placeholder="[Verse 1]&#10;Walking down the avenue...&#10;&#10;[Chorus]&#10;Feel the rhythm in the air..."></textarea>
+    </label>
+
+    <div class="grid">
+        <label for="audio_duration">
+            Duration (seconds)
+            <input type="number" name="audio_duration" id="audio_duration"
+                   value="{{ prefill_duration }}" min="10" max="300" step="10">
+        </label>
+
+        <label for="audio_format">
+            Format
+            <select name="audio_format" id="audio_format">
+                <option value="mp3" {% if prefill_format == 'mp3' %}selected{% endif %}>MP3</option>
+                <option value="wav" {% if prefill_format == 'wav' %}selected{% endif %}>WAV</option>
+                <option value="flac" {% if prefill_format == 'flac' %}selected{% endif %}>FLAC</option>
+            </select>
+        </label>
+    </div>
+
+    <details>
+        <summary>Advanced Options</summary>
+
+        <div class="grid">
+            <label for="bpm">
+                BPM
+                <input type="number" name="bpm" id="bpm" placeholder="Auto" min="40" max="280">
+                <small>40-280 (60-180 most stable)</small>
+            </label>
+
+            <label for="key_scale">
+                Key / Scale
+                <input type="text" name="key_scale" id="key_scale" placeholder="Auto (e.g. C major, Am)">
+            </label>
+
+            <label for="time_signature">
+                Time Signature
+                <input type="text" name="time_signature" id="time_signature" placeholder="Auto (e.g. 4/4)">
+            </label>
+        </div>
+
+        <div class="grid">
+            <label for="seed">
+                Seed
+                <input type="number" name="seed" id="seed" value="-1">
+                <small>-1 = random</small>
+            </label>
+
+            <label for="inference_steps">
+                Inference Steps
+                <input type="number" name="inference_steps" id="inference_steps" value="8" min="1" max="50">
+                <small>8 = turbo, 50 = quality</small>
+            </label>
+
+            <label for="guidance_scale">
+                Guidance Scale
+                <input type="number" name="guidance_scale" id="guidance_scale"
+                       value="7.0" step="0.5" min="1" max="20">
+            </label>
+        </div>
+
+        <label>
+            <input type="checkbox" name="thinking" id="thinking">
+            Enable LLM Thinking (slower, may improve coherence)
+        </label>
+    </details>
+
+    <button type="submit">
+        <span id="submit-indicator" class="htmx-indicator" aria-busy="true"></span>
+        Generate Music
+    </button>
+</form>
+
+<div id="result"></div>
+{% endblock %}
