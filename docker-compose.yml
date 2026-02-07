@@ -1,0 +1,53 @@
+# =============================================================================
+# ACE Music — Docker Compose for ACE-Step API Server
+# Uses the pre-built ValyrianTech image with models baked in.
+#
+# Usage:
+#   docker compose up -d          # Start in background
+#   docker compose logs -f        # View logs
+#   docker compose down           # Stop
+#
+# Note: The ValyrianTech image uses port 8000 internally (not 8001).
+# We map it to 8001 on the host to match our .env convention.
+# =============================================================================
+
+services:
+  acestep-api:
+    image: valyriantech/ace-step-1.5
+    container_name: ace-music-api
+    restart: unless-stopped
+
+    # GPU access
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+    # Environment
+    environment:
+      - ACESTEP_CONFIG_PATH=${ACESTEP_CONFIG_PATH:-/app/checkpoints/acestep-v15-turbo}
+      - ACESTEP_LM_MODEL_PATH=${ACESTEP_LM_MODEL_PATH:-/app/checkpoints/acestep-5Hz-lm-1.7B}
+      - ACESTEP_LM_BACKEND=${ACESTEP_LM_BACKEND:-pt}
+      - ACESTEP_API_KEY=${ACESTEP_API_KEY:-}
+      - ACESTEP_DEVICE=cuda
+      - PYTHONUNBUFFERED=1
+
+    # Ports: internal 8000 → host 8001
+    ports:
+      - "${ACESTEP_API_PORT:-8001}:8000"
+      - "${ACESTEP_UI_PORT:-7860}:7860"
+
+    # Persist generated audio
+    volumes:
+      - ./outputs:/app/outputs
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s

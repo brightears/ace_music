@@ -1,0 +1,36 @@
+[project]
+name = "ace-music"
+version = "0.1.0"
+description = "BMAsia Group AI music creation platform built on ACE-Step v1.5"
+readme = "docs/SETUP.md"
+requires-python = ">=3.11"
+license = "MIT"
+
+dependencies = [
+    "httpx>=0.27.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "python-dotenv>=1.0",
+    "soundfile>=0.13.0",
+    "rich>=13.0",
+    "click>=8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

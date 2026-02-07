@@ -66,15 +66,23 @@ docker compose up -d
 # UI at http://localhost:7860
 ```
 
+### Local Python Client
+```bash
+uv sync                                 # Install dependencies
+python scripts/test-connection.py       # Test API connectivity
+python scripts/test-generate.py         # Generate a test track
+```
+
 ## File Structure
 
 ```
 ACE Music/
 ├── CLAUDE.md                # This file
+├── pyproject.toml           # Python project config (httpx, pydantic, etc.)
+├── docker-compose.yml       # Docker deployment using valyriantech image
 ├── .gitignore
 ├── .env.example
 ├── .claude/
-│   ├── settings.local.json  # Claude Code permissions
 │   ├── agents/              # Subagent definitions
 │   │   ├── researcher.md    # Read-only research (Haiku)
 │   │   ├── code-writer.md   # Implementation (Sonnet)
@@ -86,10 +94,25 @@ ACE Music/
 │       ├── setup-cloud.md
 │       ├── test-quality.md
 │       └── deploy.md
+├── configs/                 # Deployment-specific .env templates
+│   ├── local-dev.env
+│   ├── cloud-runpod.env
+│   └── cloud-vastai.env
 ├── docs/
-│   └── RESEARCH.md          # Comprehensive research findings
-├── scripts/                 # Utility scripts (Phase 2+)
-├── src/                     # Platform source code (Phase 4+)
+│   ├── RESEARCH.md          # Comprehensive research findings
+│   └── SETUP.md             # Setup guide (3 deployment paths)
+├── scripts/
+│   ├── setup-gpu-server.sh  # Full GPU server setup from scratch
+│   ├── start-api.sh         # Launch ACE-Step API server
+│   ├── start-ui.sh          # Launch Gradio web UI
+│   ├── download-models.sh   # Pre-download model files
+│   ├── health-check.sh      # Verify API server health
+│   ├── test-connection.py   # Test API connectivity
+│   └── test-generate.py     # Generate a test track
+├── src/
+│   ├── __init__.py
+│   ├── ace_client.py        # Async Python client for ACE-Step API
+│   └── config.py            # Pydantic settings management
 ├── tests/                   # Test suite (Phase 4+)
 └── presets/                 # Generation preset files (Phase 5+)
 ```
@@ -106,7 +129,7 @@ ACE Music/
 ## Project Phases
 
 - [x] Phase 1: Research & Infrastructure (CLAUDE.md, agents, skills, RESEARCH.md)
-- [ ] Phase 2: Infrastructure Setup (environment, scripts, Docker)
+- [x] Phase 2: Infrastructure Setup (scripts, client library, Docker, configs)
 - [ ] Phase 3: Cloud GPU Setup (RunPod/Vast.ai, first test track)
 - [ ] Phase 4: Music Creation Platform (web UI, SQLite, track management)
 - [ ] Phase 5: Batch Generation Pipeline (CSV/JSON presets, thousands of tracks)
