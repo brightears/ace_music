@@ -100,7 +100,8 @@ ACE Music/
 │   └── cloud-vastai.env
 ├── docs/
 │   ├── RESEARCH.md          # Comprehensive research findings
-│   └── SETUP.md             # Setup guide (3 deployment paths)
+│   ├── SETUP.md             # Setup guide (3 deployment paths)
+│   └── GPU_SETUP.md         # Cloud GPU provider guide + cost estimates
 ├── scripts/
 │   ├── setup-gpu-server.sh  # Full GPU server setup from scratch
 │   ├── start-api.sh         # Launch ACE-Step API server
@@ -130,7 +131,7 @@ ACE Music/
 
 - [x] Phase 1: Research & Infrastructure (CLAUDE.md, agents, skills, RESEARCH.md)
 - [x] Phase 2: Infrastructure Setup (scripts, client library, Docker, configs)
-- [ ] Phase 3: Cloud GPU Setup (RunPod/Vast.ai, first test track)
+- [x] Phase 3: Cloud GPU Setup (GPU_SETUP.md, provider comparison, cost estimates)
 - [ ] Phase 4: Music Creation Platform (web UI, SQLite, track management)
 - [ ] Phase 5: Batch Generation Pipeline (CSV/JSON presets, thousands of tracks)
 - [ ] Phase 6: Testing & Quality Plan (genre matrix, A/B vs Mureka)

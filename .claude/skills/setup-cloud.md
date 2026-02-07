@@ -1,105 +1,68 @@
 ---
 name: setup-cloud
-description: Step-by-step guide for deploying ACE-Step on a cloud GPU (RunPod/Vast.ai)
+description: Deploy ACE-Step on a cloud GPU — RunPod (fastest setup), Vast.ai (cheapest), or TensorDock (budget)
 user_invocable: true
 ---
 
 # /setup-cloud
 
-Interactive deployment guide for getting ACE-Step running on a cloud GPU.
+Deploy ACE-Step on a cloud GPU and generate your first track.
+
+**Full guide:** See `docs/GPU_SETUP.md` for provider comparison, cost estimates, persistence, scaling, and troubleshooting.
 
 ## Usage
 ```
-/setup-cloud                    # Full guided setup
+/setup-cloud                    # Guided setup (defaults to RunPod)
 /setup-cloud --provider runpod  # RunPod-specific
 /setup-cloud --provider vastai  # Vast.ai-specific
 ```
 
-## Quick Start (Fastest Path to First Track)
+## Fastest Path to First Track (~15 min, <$1)
 
-**Estimated time: 15-30 minutes. Estimated cost: $0.50-2.00 for a test session.**
+### 1. Deploy on RunPod
+- Account: https://runpod.io ($10 minimum credit)
+- Deploy Pod: Image `valyriantech/ace-step-1.5`, GPU RTX 3090
+- Expose HTTP ports: `8001,7860`
+- Set env: `ACESTEP_API_KEY=sk-your-test-key`
+- Wait 2-5 min for startup (models are baked into the Docker image)
 
-### Option A: RunPod (Recommended for First Test)
+### 2. Get Your API URL
+- RunPod format: `https://<POD_ID>-8001.proxy.runpod.net`
+- If 8001 doesn't respond, try 8000 (ValyrianTech image uses 8000 internally)
+- Test: `curl https://<POD_ID>-8001.proxy.runpod.net/health`
 
-1. Create account at https://runpod.io
-2. Add billing ($10 minimum, pay-as-you-go)
-3. Deploy a GPU Pod:
-   - Template: Custom Docker image
-   - Image: `valyriantech/ace-step-1.5`
-   - GPU: RTX 3090 (24GB) — ~$0.44/hr community, ~$0.69/hr secure
-   - Volume: 30GB (for model cache)
-   - Expose HTTP port: 8001
-   - Environment vars:
-     ```
-     ACESTEP_API_KEY=sk-your-test-key
-     ACESTEP_CONFIG_PATH=acestep-v15-turbo
-     ACESTEP_LM_MODEL_PATH=acestep-5Hz-lm-1.7B
-     ```
-4. Wait for pod startup + model download (~5-15 min first time)
-5. Access API at: `https://<pod-id>-8001.proxy.runpod.net`
-6. Test: `curl https://<pod-id>-8001.proxy.runpod.net/health`
-7. Update your `.env`:
-   ```
-   ACESTEP_API_URL=https://<pod-id>-8001.proxy.runpod.net
-   ACESTEP_API_KEY=sk-your-test-key
-   ```
-8. Run `/generate-track` to create your first track
+### 3. Connect from Your Laptop
+```bash
+cp configs/cloud-runpod.env .env
+# Edit .env: set ACESTEP_API_URL and ACESTEP_API_KEY
+python scripts/test-connection.py
+python scripts/test-generate.py
+```
 
-### Option B: Vast.ai (Cheaper for Longer Sessions)
+## Cost Quick Reference
 
-1. Create account at https://vast.ai
-2. Add billing (minimum $5)
-3. Search instances: Filter for RTX 3090 or A100, Docker capable
-4. Select "ACE-Step" template if available, or use custom Docker:
-   - Image: `valyriantech/ace-step-1.5`
-   - Ports: 8001
-5. Configure environment variables (same as RunPod above)
-6. Launch and wait for model download
-7. Test health endpoint and update `.env`
+| Session | GPU | Time | Tracks | Cost |
+|---------|-----|------|--------|------|
+| Quick test | RTX 3090 | 30 min | 20 | ~$0.10-0.35 |
+| Quality eval | RTX 3090 | 2 hrs | 300 | ~$0.40-0.92 |
+| Full catalog | A100 80GB | 8 hrs | 15,000 | ~$10-20 |
 
-## GPU Recommendations
+**vs Mureka: 15,000 tracks = ~$1,000. Self-hosted = ~$10-20.**
 
-| Use Case | GPU | VRAM | Approx. Cost/hr | Speed |
-|----------|-----|------|-----------------|-------|
-| Quick test (10-20 tracks) | RTX 3090 | 24GB | $0.44-0.69 | ~6s/track |
-| Quality eval (100+ tracks) | RTX 4090 | 24GB | $0.55-0.89 | ~4s/track |
-| Batch generation (5K+ tracks) | A100 | 80GB | $1.50-2.50 | ~2s/track |
+## Provider Recommendations
 
-## Cost Estimates
-
-| Session Type | GPU | Duration | Tracks | Est. Cost |
-|-------------|-----|----------|--------|-----------|
-| Quick test | RTX 3090 | 30 min | 20 | ~$0.35 |
-| Quality eval | RTX 3090 | 2 hours | 200 | ~$1.40 |
-| Small batch | A100 | 3 hours | 2,000 | ~$6.00 |
-| Full catalog | A100 | 8 hours | 15,000 | ~$16.00 |
-
-**Compare: Mureka for 15,000 tracks = ~$1,000. Self-hosted = ~$16.**
-
-## Persistence (Don't Reinstall Every Time)
-
-### RunPod
-- Use **Network Volumes** to persist model checkpoints between sessions
-- Create a volume, mount at `/app/checkpoints`
-- First session downloads models to volume; subsequent sessions skip download
-
-### Vast.ai
-- Use **disk storage** option when creating instance
-- Models persist on instance disk while instance exists (even when stopped)
-- "Stop" instance instead of "destroy" to keep state
+| Scenario | Provider | GPU | Cost/hr |
+|----------|----------|-----|---------|
+| First test | **RunPod** | RTX 3090 | $0.20-0.46 |
+| Long sessions | **Vast.ai** | RTX 3090 | $0.15-0.40 |
+| Large batches | **Vast.ai** | A100 80GB | $0.80-1.50 |
+| Budget | TensorDock | RTX 3090 | $0.09-0.40 |
 
 ## Shutdown Checklist
-- [ ] Download any generated audio you want to keep
-- [ ] Stop (don't destroy) instance if you want to resume later
-- [ ] Destroy instance if done — stops all charges
-- [ ] Verify billing dashboard shows no active instances
+- [ ] Download outputs you want to keep
+- [ ] Stop/terminate instance in provider dashboard
+- [ ] Verify no active instances on billing page
+- [ ] Stopped instances may still incur storage charges — destroy if fully done
 
-## Troubleshooting
-
-| Problem | Solution |
-|---------|----------|
-| /health not responding | Wait 5-15 min for model download on first launch |
-| Out of memory | Use turbo model, disable LLM (ACESTEP_INIT_LLM=false) |
-| Slow generation | Check GPU utilization, ensure CUDA is being used |
-| Connection refused | Check port exposure settings in cloud provider |
-| Authentication failed | Verify ACESTEP_API_KEY matches between server and client |
+## GPU REQUIRED
+This skill deploys to a cloud GPU. Have a credit card and ~$10 ready.
