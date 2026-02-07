@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+env/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Audio files (generated output — large)
+outputs/
+*.mp3
+*.wav
+*.flac
+*.ogg
+*.m4a
+
+# Model checkpoints and weights (multi-GB)
+checkpoints/
+models/
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+lora_adapters/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+docker-compose.override.yml
+
+# Temporary
+tmp/
+temp/
